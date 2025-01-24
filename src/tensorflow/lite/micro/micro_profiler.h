@@ -65,6 +65,8 @@ class MicroProfiler : public MicroProfilerInterface {
   // total ticks summed across all events with that particular tag.
   void LogTicksPerTagCsv();
 
+  TF_LITE_REMOVE_VIRTUAL_DELETE
+
  private:
   // Maximum number of events that this class can keep track of. The
   // MicroProfiler will abort if AddEvent is called more than kMaxEvents number
@@ -87,7 +89,6 @@ class MicroProfiler : public MicroProfilerInterface {
 
   int FindExistingOrNextPosition(const char* tag_name);
 
-  TF_LITE_REMOVE_VIRTUAL_DELETE
 };
 
 #if defined(TF_LITE_STRIP_ERROR_STRINGS)

@@ -76,6 +76,8 @@ class RecordingMicroAllocator : public MicroAllocator {
   void PrintAllocations() const;
 
   void* AllocatePersistentBuffer(size_t bytes) override;
+  
+  TF_LITE_REMOVE_VIRTUAL_DELETE
 
  protected:
   TfLiteStatus AllocateNodeAndRegistrations(
@@ -132,7 +134,6 @@ class RecordingMicroAllocator : public MicroAllocator {
   // TODO(b/187993291): Re-enable OpData allocating tracking.
   RecordedAllocation recorded_op_data_ = {};
 
-  TF_LITE_REMOVE_VIRTUAL_DELETE
 };
 
 }  // namespace tflite

@@ -166,9 +166,10 @@ class MicroContext {
   virtual MicroProfilerInterface* GetAlternateProfiler() const {
     return nullptr;
   }
+  
+  TF_LITE_REMOVE_VIRTUAL_DELETE
 
  private:
-  TF_LITE_REMOVE_VIRTUAL_DELETE
 };
 
 inline MicroContext* GetMicroContext(const struct TfLiteContext* context) {

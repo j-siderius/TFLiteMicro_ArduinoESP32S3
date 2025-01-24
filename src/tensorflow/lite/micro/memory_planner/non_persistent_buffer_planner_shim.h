@@ -119,13 +119,13 @@ class NonPersistentMemoryPlannerShim : public MicroMemoryPlanner {
   // all tensors after invocation.
   bool preserves_all_tensors() const override { return false; }
 
+  TF_LITE_REMOVE_VIRTUAL_DELETE
+
  private:
   const BufferPlan* buffer_plan_;  // not owned, can't be null
 
   // The number of buffers requested so far. Used for error checking.
   int buffer_request_count_;
-
-  TF_LITE_REMOVE_VIRTUAL_DELETE
 };
 
 }  // namespace tflite

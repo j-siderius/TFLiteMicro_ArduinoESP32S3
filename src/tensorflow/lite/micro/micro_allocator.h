@@ -259,6 +259,8 @@ class MicroAllocator {
 
   TfLiteBridgeBuiltinDataAllocator* GetBuiltinDataAllocator();
 
+  TF_LITE_REMOVE_VIRTUAL_DELETE
+
  protected:
   MicroAllocator(SingleArenaBufferAllocator* memory_allocator,
                  MicroMemoryPlanner* memory_planner);
@@ -359,8 +361,6 @@ class MicroAllocator {
   // Holds the byte length of the memory plan with the largest head usage. Used
   // to ensure that multi-tenant allocations can share the head for buffers.
   size_t max_head_buffer_usage_ = 0;
-
-  TF_LITE_REMOVE_VIRTUAL_DELETE
 };
 
 }  // namespace tflite

@@ -71,12 +71,12 @@ class StackAllocator : public flatbuffers::Allocator {
 
   static constexpr size_t kStackAllocatorSize = 8192;
 
+  TF_LITE_REMOVE_VIRTUAL_DELETE
+
  private:
   uint8_t data_backing_[kStackAllocatorSize];
   uint8_t* data_;
   int data_size_;
-
-  TF_LITE_REMOVE_VIRTUAL_DELETE
 };
 
 flatbuffers::FlatBufferBuilder* BuilderInstance() {

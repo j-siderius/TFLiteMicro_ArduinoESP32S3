@@ -52,9 +52,10 @@ class MicroGraph {
 
   // Get the resource variables for this TFLM graph.
   virtual MicroResourceVariables* GetResourceVariables() = 0;
+  
+  TF_LITE_REMOVE_VIRTUAL_DELETE
 
  private:
-  TF_LITE_REMOVE_VIRTUAL_DELETE
 };
 
 }  // namespace tflite
