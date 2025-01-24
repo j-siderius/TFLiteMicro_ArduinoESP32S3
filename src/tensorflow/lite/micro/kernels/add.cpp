@@ -15,8 +15,6 @@ limitations under the License.
 
 #include "tensorflow/lite/kernels/internal/reference/add.h"
 
-#include <limits>
-
 #include "tensorflow/lite/c/builtin_op_data.h"
 #include "tensorflow/lite/c/common.h"
 #include "tensorflow/lite/kernels/internal/quantization_util.h"
@@ -30,6 +28,14 @@ limitations under the License.
 #include "tensorflow/lite/micro/memory_helpers.h"
 #include "tensorflow/lite/micro/micro_log.h"
 
+#include <esp_timer.h>
+
+#if ESP_NN
+#include <esp_nn.h>
+#endif
+
+long long add_total_time = 0;
+
 namespace tflite {
 
 TfLiteStatus EvalAdd(TfLiteContext* context, TfLiteNode* node,
@@ -38,7 +44,7 @@ TfLiteStatus EvalAdd(TfLiteContext* context, TfLiteNode* node,
                      const TfLiteEvalTensor* input2, TfLiteEvalTensor* output) {
   switch (output->type) {
     case kTfLiteFloat32: {
-      tflite::ArithmeticParams op_params = {};
+      tflite::ArithmeticParams op_params;
       SetActivationParams(data->output_activation_min_f32,
                           data->output_activation_max_f32, &op_params);
       if (data->requires_broadcast) {
@@ -59,7 +65,7 @@ TfLiteStatus EvalAdd(TfLiteContext* context, TfLiteNode* node,
       }
     } break;
     case kTfLiteInt32: {
-      tflite::ArithmeticParams op_params = {};
+      tflite::ArithmeticParams op_params;
       SetActivationParams(std::numeric_limits<int32_t>::lowest(),
                           std::numeric_limits<int32_t>::max(), &op_params);
       if (data->requires_broadcast) {
@@ -93,7 +99,7 @@ TfLiteStatus EvalAddQuantized(TfLiteContext* context, TfLiteNode* node,
                               const TfLiteEvalTensor* input1,
                               const TfLiteEvalTensor* input2,
                               TfLiteEvalTensor* output) {
-  tflite::ArithmeticParams op_params = {};
+  tflite::ArithmeticParams op_params;
   op_params.left_shift = data->left_shift;
   op_params.input1_offset = data->input1_offset;
   op_params.input1_multiplier = data->input1_multiplier;
@@ -121,6 +127,31 @@ TfLiteStatus EvalAddQuantized(TfLiteContext* context, TfLiteNode* node,
             tflite::micro::GetTensorShape(output),
             tflite::micro::GetTensorData<int8_t>(output));
       } else {
+#if ESP_NN
+        const int8_t *input1_data = tflite::micro::GetTensorData<int8_t>(input1);
+        const int8_t *input2_data = tflite::micro::GetTensorData<int8_t>(input2);
+        int8_t *out_data = tflite::micro::GetTensorData<int8_t>(output);
+
+        esp_nn_add_elementwise_s8(input1_data,
+                                  input2_data,
+                                  data->input1_offset,
+                                  data->input2_offset,
+                                  data->input1_multiplier,
+                                  data->input2_multiplier,
+                                  data->input1_shift,
+                                  data->input2_shift,
+                                  data->left_shift,
+                                  out_data,
+                                  data->output_offset,
+                                  data->output_multiplier,
+                                  data->output_shift,
+                                  data->output_activation_min,
+                                  data->output_activation_max,
+                                  MatchingElementsSize(tflite::micro::GetTensorShape(input1),
+                                                       tflite::micro::GetTensorShape(input2),
+                                                       tflite::micro::GetTensorShape(output))
+                                  );
+#else
         reference_integer_ops::Add(
             op_params, tflite::micro::GetTensorShape(input1),
             tflite::micro::GetTensorData<int8_t>(input1),
@@ -128,6 +159,7 @@ TfLiteStatus EvalAddQuantized(TfLiteContext* context, TfLiteNode* node,
             tflite::micro::GetTensorData<int8_t>(input2),
             tflite::micro::GetTensorShape(output),
             tflite::micro::GetTensorData<int8_t>(output));
+#endif
       }
       break;
     }
@@ -178,6 +210,8 @@ TfLiteStatus AddEval(TfLiteContext* context, TfLiteNode* node) {
   TfLiteEvalTensor* output =
       tflite::micro::GetEvalOutput(context, node, kAddOutputTensor);
 
+  long long start_time = esp_timer_get_time();
+
   if (output->type == kTfLiteFloat32 || output->type == kTfLiteInt32) {
     TF_LITE_ENSURE_OK(
         context, EvalAdd(context, node, params, data, input1, input2, output));
@@ -189,6 +223,7 @@ TfLiteStatus AddEval(TfLiteContext* context, TfLiteNode* node) {
                 output->type);
     return kTfLiteError;
   }
+  add_total_time += esp_timer_get_time() - start_time;
 
   return kTfLiteOk;
 }

@@ -1,4 +1,4 @@
-/* Copyright 2022 The TensorFlow Authors. All Rights Reserved.
+/* Copyright 2021 The TensorFlow Authors. All Rights Reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -26,7 +26,57 @@ limitations under the License.
 #include "tensorflow/lite/micro/memory_helpers.h"
 #include "tensorflow/lite/micro/micro_log.h"
 
+#if ESP_NN
+#include <esp_nn.h>
+#endif
+
+#include <esp_timer.h>
+
+long long mul_total_time = 0;
+
 namespace tflite {
+#if ESP_NN
+void MulEvalQuantized(TfLiteContext* context, TfLiteNode* node,
+                      const OpDataMul* data, const TfLiteEvalTensor* input1,
+                      const TfLiteEvalTensor* input2,
+                      TfLiteEvalTensor* output) {
+  tflite::ArithmeticParams op_params = {};
+  op_params.quantized_activation_min = data->output_activation_min;
+  op_params.quantized_activation_max = data->output_activation_max;
+  op_params.float_activation_max = data->output_activation_max_f32;
+  op_params.input1_offset = -data->input1_zero_point;
+  op_params.input2_offset = -data->input2_zero_point;
+  op_params.output_offset = data->output_zero_point;
+  op_params.output_multiplier = data->output_multiplier;
+  op_params.output_shift = data->output_shift;
+
+  bool need_broadcast = reference_ops::ProcessBroadcastShapes(
+      tflite::micro::GetTensorShape(input1),
+      tflite::micro::GetTensorShape(input2), &op_params);
+
+  if (need_broadcast) {
+    reference_integer_ops::BroadcastMul4DSlow(
+        op_params, tflite::micro::GetTensorShape(input1),
+        tflite::micro::GetTensorData<int8_t>(input1),
+        tflite::micro::GetTensorShape(input2),
+        tflite::micro::GetTensorData<int8_t>(input2),
+        tflite::micro::GetTensorShape(output),
+        tflite::micro::GetTensorData<int8_t>(output));
+  } else {
+    const int8_t *input1_data = tflite::micro::GetTensorData<int8_t>(input1);
+    const int8_t *input2_data = tflite::micro::GetTensorData<int8_t>(input2);
+    int8_t *out_data = tflite::micro::GetTensorData<int8_t>(output);
+
+    esp_nn_mul_elementwise_s8(input1_data, input2_data, op_params.input1_offset,
+                              op_params.input2_offset, out_data, op_params.output_offset,
+                              op_params.output_multiplier, op_params.output_shift,
+                              op_params.quantized_activation_min, op_params.quantized_activation_max,
+                              MatchingElementsSize(tflite::micro::GetTensorShape(input1),
+                                                    tflite::micro::GetTensorShape(input2),
+                                                    tflite::micro::GetTensorShape(output)));
+  }
+}
+#endif
 
 TfLiteStatus MulEval(TfLiteContext* context, TfLiteNode* node) {
   TFLITE_DCHECK(node->builtin_data != nullptr);
@@ -42,8 +92,15 @@ TfLiteStatus MulEval(TfLiteContext* context, TfLiteNode* node) {
   TfLiteEvalTensor* output =
       tflite::micro::GetEvalOutput(context, node, kMulOutputTensor);
 
+  long long start_time = esp_timer_get_time();
   switch (input1->type) {
     case kTfLiteInt8:
+#if ESP_NN
+      MulEvalQuantized(context, node, data, input1, input2, output);
+#else
+      EvalMulQuantizedReference(context, node, data, input1, input2, output);
+#endif
+      break;
     case kTfLiteInt16:
     case kTfLiteInt32:
       EvalMulQuantizedReference(context, node, data, input1, input2, output);
@@ -57,7 +114,7 @@ TfLiteStatus MulEval(TfLiteContext* context, TfLiteNode* node) {
                   TfLiteTypeGetName(input1->type), input1->type);
       return kTfLiteError;
   }
-
+  mul_total_time += esp_timer_get_time() - start_time;
   return kTfLiteOk;
 }
 
