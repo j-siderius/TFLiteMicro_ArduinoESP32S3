@@ -17,7 +17,9 @@ limitations under the License.
 
 #define FIXED_POINT 32
 namespace kiss_fft_fixed32 {
-#include "kiss_fft.c"
-#include "tools/kiss_fftr.c"
+// #include "kiss_fft.c"
+// #include "tools/kiss_fftr.c"
+#include "third_party/kissfft/kiss_fft.c"
+#include "third_party/kissfft/tools/kiss_fftr.c"
 }  // namespace kiss_fft_fixed32
 #undef FIXED_POINT
