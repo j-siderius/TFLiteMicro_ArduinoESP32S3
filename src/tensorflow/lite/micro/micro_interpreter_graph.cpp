@@ -15,7 +15,7 @@ limitations under the License.
 
 #include "tensorflow/lite/micro/micro_interpreter_graph.h"
 
-#include "flatbuffers/flatbuffers.h"  // from @flatbuffers
+#include "third_party/flatbuffers/flatbuffers.h"  // from @flatbuffers
 #include "tensorflow/lite/c/common.h"
 #include "tensorflow/lite/kernels/internal/compatibility.h"
 #include "tensorflow/lite/micro/flatbuffer_utils.h"

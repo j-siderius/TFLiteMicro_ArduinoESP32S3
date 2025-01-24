@@ -21,7 +21,7 @@ limitations under the License.
 #include <initializer_list>
 #include <new>
 
-#include "flatbuffers/flatbuffers.h"  // from @flatbuffers
+#include "third_party/flatbuffers/flatbuffers.h"  // from @flatbuffers
 #include "tensorflow/lite/c/common.h"
 #include "tensorflow/lite/kernels/internal/compatibility.h"
 #include "tensorflow/lite/kernels/internal/tensor_ctypes.h"

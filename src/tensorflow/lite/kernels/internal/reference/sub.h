@@ -21,7 +21,7 @@ limitations under the License.
 #include <cstddef>
 #include <limits>
 
-#include "ruy/profiler/instrumentation.h"  // from @ruy
+#include "third_party/ruy/ruy/profiler/instrumentation.h"  // from @ruy
 #include "tensorflow/lite/kernels/internal/common.h"
 #include "tensorflow/lite/kernels/internal/compatibility.h"
 #include "tensorflow/lite/kernels/internal/types.h"

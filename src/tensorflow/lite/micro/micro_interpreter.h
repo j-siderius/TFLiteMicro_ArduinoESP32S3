@@ -24,7 +24,7 @@ limitations under the License.
 
 #endif  // USE_TFLM_COMPRESSION
 
-#include "flatbuffers/flatbuffers.h"  // from @flatbuffers
+#include "third_party/flatbuffers/flatbuffers.h"  // from @flatbuffers
 #include "tensorflow/lite/c/c_api_types.h"
 #include "tensorflow/lite/c/common.h"
 #include "tensorflow/lite/core/api/error_reporter.h"

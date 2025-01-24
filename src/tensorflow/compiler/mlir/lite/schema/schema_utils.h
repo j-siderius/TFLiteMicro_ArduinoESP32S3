@@ -15,7 +15,7 @@ limitations under the License.
 #ifndef TENSORFLOW_COMPILER_MLIR_LITE_SCHEMA_SCHEMA_UTILS_H_
 #define TENSORFLOW_COMPILER_MLIR_LITE_SCHEMA_SCHEMA_UTILS_H_
 
-#include "flatbuffers/flatbuffers.h"
+#include "third_party/flatbuffers/flatbuffers.h"
 #include "tensorflow/compiler/mlir/lite/schema/schema_generated.h"
 
 namespace tflite {

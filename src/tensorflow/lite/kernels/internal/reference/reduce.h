@@ -17,7 +17,7 @@ limitations under the License.
 
 #include <algorithm>
 
-#include "ruy/profiler/instrumentation.h"  // from @ruy
+#include "third_party/ruy/ruy/profiler/instrumentation.h"  // from @ruy
 #include "tensorflow/lite/kernels/internal/common.h"
 #include "tensorflow/lite/kernels/internal/cppmath.h"
 #include "tensorflow/lite/kernels/internal/max.h"

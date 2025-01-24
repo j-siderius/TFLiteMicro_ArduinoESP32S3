@@ -17,8 +17,8 @@ limitations under the License.
 
 #include <algorithm>
 
-#include "fixedpoint/fixedpoint.h"
-#include "ruy/profiler/instrumentation.h"  // from @ruy
+#include "third_party/gemmlowp/fixedpoint/fixedpoint.h"
+#include "third_party/ruy/ruy/profiler/instrumentation.h"  // from @ruy
 #include "tensorflow/lite/kernels/internal/common.h"
 
 namespace tflite {
