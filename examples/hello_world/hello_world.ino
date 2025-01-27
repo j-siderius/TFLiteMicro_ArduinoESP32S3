@@ -14,14 +14,12 @@ limitations under the License.
 ==============================================================================*/
 
 
-#include "tensorflow/lite/micro/micro_mutable_op_resolver.h"
-#include "tensorflow/lite/micro/micro_interpreter.h"
-#include "tensorflow/lite/micro/system_setup.h"
-#include "tensorflow/lite/schema/schema_generated.h"
+#include "src/tensorflow/lite/micro/micro_mutable_op_resolver.h"
+#include "src/tensorflow/lite/micro/micro_interpreter.h"
+#include "src/tensorflow/lite/micro/system_setup.h"
+#include "src/tensorflow/lite/schema/schema_generated.h"
 
-#include "main_functions.h"
 #include "model.h"
-#include "constants.h"
 #include "output_handler.h"
 
 // Globals, used for compatibility with Arduino-style sketches.
@@ -31,6 +29,9 @@ tflite::MicroInterpreter* interpreter = nullptr;
 TfLiteTensor* input = nullptr;
 TfLiteTensor* output = nullptr;
 int inference_count = 0;
+
+const float kXrange = 2.f * 3.14159265359f;
+const int kInferencesPerCycle = 20;
 
 constexpr int kTensorArenaSize = 2000;
 uint8_t tensor_arena[kTensorArenaSize];
@@ -109,4 +110,6 @@ void loop() {
   // the total number per cycle
   inference_count += 1;
   if (inference_count >= kInferencesPerCycle) inference_count = 0;
+
+  delay(500);
 }

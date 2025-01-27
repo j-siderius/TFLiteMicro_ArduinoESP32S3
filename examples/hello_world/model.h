@@ -22,8 +22,6 @@ limitations under the License.
 
 // See train/README.md for a full description of the creation process.
 
-#include "model.h"
-
 // Keep model aligned to 8 bytes to guarantee aligned 64-bit accesses.
 alignas(8) const unsigned char g_model[] = {
     0x1c, 0x00, 0x00, 0x00, 0x54, 0x46, 0x4c, 0x33, 0x14, 0x00, 0x20, 0x00,
