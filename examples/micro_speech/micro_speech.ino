@@ -20,9 +20,7 @@ limitations under the License.
 #include "main_functions.h"
 
 #include "audio_provider.h"
-#include "command_responder.h"
 #include "feature_provider.h"
-#include "micro_model_settings.h"
 #include "model.h"
 #include "recognize_commands.h"
 #include "tensorflow/lite/micro/system_setup.h"
@@ -48,6 +46,25 @@ constexpr int kTensorArenaSize = 30 * 1024;
 uint8_t tensor_arena[kTensorArenaSize];
 int8_t feature_buffer[kFeatureElementCount];
 int8_t* model_input_buffer = nullptr;
+
+// The following values are derived from values used during model training.
+// If you change the way you preprocess the input, update all these constants.
+constexpr int kMaxAudioSampleSize = 512;
+constexpr int kAudioSampleFrequency = 16000;
+constexpr int kFeatureSize = 40;
+constexpr int kFeatureCount = 49;
+constexpr int kFeatureElementCount = (kFeatureSize * kFeatureCount);
+constexpr int kFeatureStrideMs = 20;
+constexpr int kFeatureDurationMs = 30;
+
+// Variables for the model's output categories.
+constexpr int kCategoryCount = 4;
+constexpr const char* kCategoryLabels[kCategoryCount] = {
+    "silence",
+    "unknown",
+    "yes",
+    "no",
+};
 }  // namespace
 
 // The name of this function is important for Arduino compatibility.
@@ -184,6 +201,8 @@ void loop() {
   // Do something based on the recognized command. The default implementation
   // just prints to the error console, but you should replace this with your
   // own function for a real application.
-  RespondToCommand(current_time, found_command, score, is_new_command);
+  if (is_new_command) {
+    MicroPrintf("Heard %s (%.4f) @%dms", found_command, score, current_time);
+  }
 #endif
 }

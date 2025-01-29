@@ -18,8 +18,6 @@ limitations under the License.
 // for devices that don't have a file system. It was created using the command:
 // xxd -i model.tflite > model.cc
 
-#include "model.h"
-
 // We need to keep the data array aligned on some architectures.
 #ifdef __has_attribute
 #define HAVE_ATTRIBUTE(x) __has_attribute(x)
