@@ -5,16 +5,18 @@
 */
 
 // This file was generated based on hello_world_float.tflite.
+// Include the following line in the setup of the main INO file to initialise the model: 
+// `TFLMinterpreter = TFLMsetupModel<TFLMnumberOperators, 10000>(TFLM_hello_world_float_model, TFLMgetResolver);`
 
 #pragma once
 
 #include "tensorflow/lite/micro/micro_mutable_op_resolver.h"
 
-constexpr int kNumberOperators = 1;
+constexpr int TFLMnumberOperators = 1;
 
-inline tflite::MicroMutableOpResolver<kNumberOperators> get_resolver()
+inline tflite::MicroMutableOpResolver<TFLMnumberOperators> TFLMgetResolver()
 {
-  tflite::MicroMutableOpResolver<kNumberOperators> micro_op_resolver;
+  tflite::MicroMutableOpResolver<TFLMnumberOperators> micro_op_resolver;
 
   micro_op_resolver.AddFullyConnected();
 
@@ -33,9 +35,9 @@ inline tflite::MicroMutableOpResolver<kNumberOperators> get_resolver()
 #define DATA_ALIGN_ATTRIBUTE
 #endif
 
-unsigned int model_len = 3164;
+unsigned int TFLMmodelLength = 3164;
 
-const unsigned char hello_world_float[] DATA_ALIGN_ATTRIBUTE = {
+const unsigned char TFLM_hello_world_float_model[] DATA_ALIGN_ATTRIBUTE = {
     0x1c, 0x00, 0x00, 0x00, 0x54, 0x46, 0x4c, 0x33, 0x14, 0x00, 0x20, 0x00,
      0x1c, 0x00, 0x18, 0x00, 0x14, 0x00, 0x10, 0x00, 0x0c, 0x00, 0x00, 0x00,
      0x08, 0x00, 0x04, 0x00, 0x14, 0x00, 0x00, 0x00, 0x1c, 0x00, 0x00, 0x00,

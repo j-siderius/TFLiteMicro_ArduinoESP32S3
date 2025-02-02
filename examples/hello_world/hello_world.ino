@@ -1,67 +1,49 @@
-/* Copyright 2020 The TensorFlow Authors. All Rights Reserved.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-==============================================================================*/
-
 #include "TFLiteMicro_ArduinoESP32S3.h"
-#include "hello_world_float_resolver.h"
+#include "hello_world_float_model.h"
 
-int inference_count = 0;
-const float kXrange = 2.f * 3.14159265359f;
-const float kInferencesPerCycle = 20;
+// Global variables
+int InferenceCount = 0; // Counter for the number of inferences performed
+const float Xrange = 2.f * 3.14159265359f; // Range of x values (0 to 2π)
+const float InferencesPerCycle = 20; // Number of inferences to perform in one cycle
 
 void setup()
 {
-
-  interpreter = setupModel<kNumberOperators, 2000>(hello_world_float, get_resolver);
-  if (!interpreter) {
+  // Initialize the TensorFlow Lite Micro interpreter with the model and resolver (according to the command in the model header file)
+  TFLMinterpreter = TFLMsetupModel<TFLMnumberOperators, 10000>(TFLM_hello_world_float_model, TFLMgetResolver);
+  
+  // Check if the model was set up correctly
+  if (!TFLMinterpreter) {
     MicroPrintf("The model was not setup correctly.");
     for(;;){}
   }
 
-  // Obtain pointers to the model's input and output tensors.
-  input = interpreter->input(0);
-  output = interpreter->output(0);
-
-  // Keep track of how many inferences we have performed.
-  inference_count = 0;
+  // Initialize inference count
+  InferenceCount = 0;
 }
 
-// The name of this function is important for Arduino compatibility.
 void loop()
 {
-  // Calculate an x value to feed into the model. We compare the current
-  // inference_count to the number of inferences per cycle to determine
-  // our position within the range of possible x values the model was
-  // trained on, and use this to calculate a value.
-  float position = inference_count / kInferencesPerCycle;
-  float x = position * kXrange;
+  // Calculate the current position within the range of x values
+  float position = InferenceCount / InferencesPerCycle; // Normalized position
+  float x = position * Xrange; // Calculate x value based on position
 
-  input->data.f[0] = x;
+  // Set the input data for the model
+  TFLMinput->data.f[0] = x;
 
-  predictModel();
+  // Perform inference using the model
+  TFLMpredict();
 
-  float y = output->data.f[0];
+  // Retrieve the output from the model
+  float y = TFLMoutput->data.f[0];
 
-  // Log the current X and output Y
+  // Log the current x and output y values
   MicroPrintf("x_value:%f,y_value:%f", x, y);
 
-  // Increment the inference_counter, and reset it if we have reached
-  // the total number per cycle
-  inference_count += 1;
-  if (inference_count >= kInferencesPerCycle)
-    inference_count = 0;
+  // Increment the inference counter and reset if it reaches the cycle limit
+  InferenceCount += 1;
+  if (InferenceCount >= InferencesPerCycle)
+    InferenceCount = 0; // Reset counter for the next cycle
 
-  // trigger one inference every 100ms
+  // Delay to control the frequency of inferences (100ms)
   delay(100);
 }

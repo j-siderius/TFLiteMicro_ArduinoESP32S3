@@ -10,10 +10,10 @@
 // Globals, used for compatibility with Arduino-style sketches.
 namespace
 {
-    const tflite::Model *_model = nullptr; // Internal pointer to the TFLite model
-    tflite::MicroInterpreter *interpreter = nullptr; // Pointer to the interpreter
-    TfLiteTensor *input = nullptr; // Pointer to the input tensor
-    TfLiteTensor *output = nullptr; // Pointer to the output tensor
+    const tflite::Model *_model = nullptr;               // Internal pointer to the TFLite model
+    tflite::MicroInterpreter *TFLMinterpreter = nullptr; // Pointer to the interpreter
+    TfLiteTensor *TFLMinput = nullptr;                   // Pointer to the input tensor
+    TfLiteTensor *TFLMoutput = nullptr;                  // Pointer to the output tensor
 } // namespace
 
 /*!
@@ -22,11 +22,12 @@ namespace
     @tparam TFArenaSize The size (in bytes) of the model arena / working memory
     @param  TFModel     The TFLiteMicro model (defined in the resolver header file)
     @param  TFOperatorResolver  The resolver function for all TFLiteMicro operators (defined in the resolver header file)
-    @return The TFLiteMicro interpreter pointer 
+    @param  TFdebug Print some additional information during setup, default is false
+    @return The TFLiteMicro interpreter pointer
 */
 template <int TFOperatorCount, size_t TFArenaSize>
-tflite::MicroInterpreter* setupModel(const unsigned char *TFModel,
-                tflite::MicroMutableOpResolver<TFOperatorCount> (*TFOperatorResolver)())
+tflite::MicroInterpreter *TFLMsetupModel(const unsigned char *TFModel,
+                                         tflite::MicroMutableOpResolver<TFOperatorCount> (*TFOperatorResolver)(), bool TFdebug = false)
 {
 
     static_assert(TFOperatorCount > 0, "The number of operators in the model is 0 (which seems wrong).");
@@ -37,7 +38,7 @@ tflite::MicroInterpreter* setupModel(const unsigned char *TFModel,
     _model = tflite::GetModel(TFModel); // Retrieve the model from the provided data
     if (_model->version() != TFLITE_SCHEMA_VERSION)
     {
-        MicroPrintf("Model provided is schema version %d not equal to supported version %d.",
+        MicroPrintf("TFModel provided is schema version %d not equal to supported version %d.",
                     _model->version(), TFLITE_SCHEMA_VERSION);
         return nullptr; // Return null if the model version is unsupported
     }
@@ -53,9 +54,22 @@ tflite::MicroInterpreter* setupModel(const unsigned char *TFModel,
     TfLiteStatus allocate_status = _static_interpreter.AllocateTensors();
     if (allocate_status != kTfLiteOk)
     {
-        MicroPrintf("AllocateTensors() failed, the arenasize is (probably) too small.");
+        MicroPrintf("AllocateTensors() failed, the TFArenaSize is (probably) too small.");
         return nullptr; // Return null if tensor allocation fails
     }
+
+    // Debugging to see the exact arena size
+    if (TFdebug)
+    {
+        delay(1000);
+        // Print the actual arena size
+        size_t _used_size = _static_interpreter.arena_used_bytes();
+        MicroPrintf("Tensor arena used %d bytes.", _used_size);
+    }
+
+    // Obtain pointers to the model's input and output tensors.
+    TFLMinput = _static_interpreter.input(0);
+    TFLMoutput = _static_interpreter.output(0);
 
     return &_static_interpreter; // Return the interpreter pointer
 }
@@ -64,14 +78,14 @@ tflite::MicroInterpreter* setupModel(const unsigned char *TFModel,
     @brief  Predict an output from the given input(s), set them using `interpreter->input[x] = y`
     @return True if the prediction was successful, False if an error occurred
 */
-bool predictModel()
+bool TFLMpredict()
 {
     // Run inference, and report any error
-    TfLiteStatus invoke_status = interpreter->Invoke();
-    if (invoke_status != kTfLiteOk)
+    TfLiteStatus _invoke_status = TFLMinterpreter->Invoke();
+    if (_invoke_status != kTfLiteOk)
     {
         MicroPrintf("Invoke failed."); // Log failure of the invoke operation
-        return false; // Return false if invocation fails
+        return false;                  // Return false if invocation fails
     }
 
     return true; // Return true if prediction was successful
