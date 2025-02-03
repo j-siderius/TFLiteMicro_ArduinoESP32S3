@@ -14,16 +14,18 @@ _build_template = template.Template("""/*
 */
 
 // This file was generated based on ${model}.
+// Include the following line in the setup of the main INO file to initialise the model: 
+// `TFLMinterpreter = TFLMsetupModel<TFLMnumberOperators, ${tensor_arena_size}>(${model_name}, TFLMgetResolver);`
 
 #pragma once
 
 #include "tensorflow/lite/micro/micro_mutable_op_resolver.h"
 
-constexpr int kNumberOperators = ${number_of_ops};
+constexpr int TFLMnumberOperators = ${number_of_ops};
 
-inline tflite::MicroMutableOpResolver<kNumberOperators> get_resolver()
+inline tflite::MicroMutableOpResolver<TFLMnumberOperators> TFLMgetResolver()
 {
-  tflite::MicroMutableOpResolver<kNumberOperators> micro_op_resolver;
+  tflite::MicroMutableOpResolver<TFLMnumberOperators> micro_op_resolver;
 
 % for operator in operators:
   micro_op_resolver.${operator}();
@@ -44,7 +46,7 @@ inline tflite::MicroMutableOpResolver<kNumberOperators> get_resolver()
 #define DATA_ALIGN_ATTRIBUTE
 #endif
 
-unsigned int model_len = ${model_length};
+unsigned int TFLMmodelLength = ${model_length};
 
 const unsigned char ${model_name}[] DATA_ALIGN_ATTRIBUTE = {
     ${hex_array}
@@ -153,7 +155,7 @@ def GenerateTFLMHeaderFile(build_template, model_ops, model_name, model_hex_arra
     """Generates Micro Mutable Op Resolver code based on a template."""
 
     number_of_ops = len(model_ops)
-    outfile = model_name + '_resolver.h'
+    outfile = model_name + '_model.h'
 
     template_file_path = "./tflm_resolver.h.mako"
     # build_template = template.Template(filename=template_file_path)
@@ -164,8 +166,9 @@ def GenerateTFLMHeaderFile(build_template, model_ops, model_name, model_hex_arra
             'number_of_ops': number_of_ops,
             'operators': model_ops,
             'model_length': model_length,
-            'model_name': model_name,
-            'hex_array': model_hex_array
+            'model_name': "TFLM_" + model_name + "_model",
+            'hex_array': model_hex_array,
+            'tensor_arena_size': (int(41240/5000)+1)*5000
         }
         file_obj.write(build_template.render(**key_values_in_template))
 
@@ -226,8 +229,8 @@ def convert_tflite_to_tflm(tflite_path: str = "model.tflite") -> str:
 
     GenerateTFLMHeaderFile(_build_template, operator_list, model_name, hex_array, array_length, "./")
 
-    print(f"{model_name} has been converted and saved to {model_name + "_resolver.h"}")
-    return model_name + "_resolver.h"
+    print(f"{model_name} has been converted and saved to {model_name + "_model.h"}")
+    return model_name + "_model.h"
 
 
 if __name__ == "__main__":
