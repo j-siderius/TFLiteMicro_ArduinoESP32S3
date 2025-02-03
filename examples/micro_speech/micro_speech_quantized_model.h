@@ -6,7 +6,7 @@
 
 // This file was generated based on micro_speech_quantized.tflite.
 // Include the following line in the setup of the main INO file to initialise the model: 
-// `TFLMinterpreter = TFLMsetupModel<TFLMnumberOperators, 10000>(TFLM_micro_speech_quantized_model, TFLMgetResolver);`
+// `TFLMinterpreter = TFLMsetupModel<TFLMnumberOperators, 20000>(TFLM_micro_speech_quantized_model, TFLMgetResolver);`
 
 #pragma once
 

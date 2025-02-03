@@ -6,7 +6,7 @@
 
 // This file was generated based on hello_world_float.tflite.
 // Include the following line in the setup of the main INO file to initialise the model: 
-// `TFLMinterpreter = TFLMsetupModel<TFLMnumberOperators, 10000>(TFLM_hello_world_float_model, TFLMgetResolver);`
+// `TFLMinterpreter = TFLMsetupModel<TFLMnumberOperators, 5000>(TFLM_hello_world_float_model, TFLMgetResolver);`
 
 #pragma once
 

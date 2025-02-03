@@ -7,7 +7,7 @@ void setup()
     Serial.begin(115200); // Initialize serial communication at 115200 baud rate
 
     // Set up the TensorFlow Lite Micro interpreter with the trained LSTM model
-    TFLMinterpreter = TFLMsetupModel<TFLMnumberOperators, 10000>(TFLM_trained_lstm_model, TFLMgetResolver, true);
+    TFLMinterpreter = TFLMsetupModel<TFLMnumberOperators, 45000>(TFLM_trained_lstm_model, TFLMgetResolver, true);
 
     // Check if the model was set up correctly
     if (!TFLMinterpreter)

@@ -20,7 +20,7 @@ namespace
 void setup()
 {
   // Initialize the TensorFlow Lite Micro interpreter with the quantized model
-  TFLMinterpreter = TFLMsetupModel<TFLMnumberOperators, 19000>(TFLM_micro_speech_quantized_model, TFLMgetResolver);
+  TFLMinterpreter = TFLMsetupModel<TFLMnumberOperators, 20000>(TFLM_micro_speech_quantized_model, TFLMgetResolver);
 
   // Check if the model was set up correctly
   if (!TFLMinterpreter) {

@@ -9,7 +9,7 @@ const float InferencesPerCycle = 20; // Number of inferences to perform in one c
 void setup()
 {
   // Initialize the TensorFlow Lite Micro interpreter with the model and resolver (according to the command in the model header file)
-  TFLMinterpreter = TFLMsetupModel<TFLMnumberOperators, 10000>(TFLM_hello_world_float_model, TFLMgetResolver);
+  TFLMinterpreter = TFLMsetupModel<TFLMnumberOperators, 5000>(TFLM_hello_world_float_model, TFLMgetResolver);
   
   // Check if the model was set up correctly
   if (!TFLMinterpreter) {

@@ -6,7 +6,7 @@
 
 // This file was generated based on trained_lstm.tflite.
 // Include the following line in the setup of the main INO file to initialise the model: 
-// `TFLMinterpreter = TFLMsetupModel<TFLMnumberOperators, 10000>(TFLM_trained_lstm_model, TFLMgetResolver);`
+// `TFLMinterpreter = TFLMsetupModel<TFLMnumberOperators, 45000>(TFLM_trained_lstm_model, TFLMgetResolver);`
 
 #pragma once
 
