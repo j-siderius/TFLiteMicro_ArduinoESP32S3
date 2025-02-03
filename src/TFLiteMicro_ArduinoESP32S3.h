@@ -6,6 +6,8 @@
 #include "tensorflow/lite/micro/micro_interpreter.h"
 #include "tensorflow/lite/micro/system_setup.h"
 #include "tensorflow/lite/schema/schema_generated.h"
+#include "tensorflow/lite/micro/micro_log.h"
+#include "tensorflow/lite/core/c/common.h"
 
 // Globals, used for compatibility with Arduino-style sketches.
 namespace
@@ -14,6 +16,8 @@ namespace
     tflite::MicroInterpreter *TFLMinterpreter = nullptr; // Pointer to the interpreter
     TfLiteTensor *TFLMinput = nullptr;                   // Pointer to the input tensor
     TfLiteTensor *TFLMoutput = nullptr;                  // Pointer to the output tensor
+    unsigned long _previousMicros = 0;                   // For timing the inference speed
+    bool _debug = false;                                 // If the functions should print debug information
 } // namespace
 
 /*!
@@ -32,6 +36,8 @@ tflite::MicroInterpreter *TFLMsetupModel(const unsigned char *TFModel,
 
     static_assert(TFOperatorCount > 0, "The number of operators in the model is 0 (which seems wrong).");
     static_assert(TFArenaSize > 100, "The arenasize is too small (<100 bytes).");
+
+    _debug = TFdebug;
 
     static uint8_t _tensor_arena[TFArenaSize]; // Internal memory arena for tensor allocation
 
@@ -59,12 +65,12 @@ tflite::MicroInterpreter *TFLMsetupModel(const unsigned char *TFModel,
     }
 
     // Debugging to see the exact arena size
-    if (TFdebug)
+    if (_debug)
     {
         delay(1000);
         // Print the actual arena size
         size_t _used_size = _static_interpreter.arena_used_bytes();
-        MicroPrintf("Tensor arena used %d bytes.", _used_size);
+        MicroPrintf("DEBUG:Tensor arena used %d bytes.", _used_size);
     }
 
     // Obtain pointers to the model's input and output tensors.
@@ -80,12 +86,19 @@ tflite::MicroInterpreter *TFLMsetupModel(const unsigned char *TFModel,
 */
 bool TFLMpredict()
 {
+    _previousMicros = micros();
+
     // Run inference, and report any error
     TfLiteStatus _invoke_status = TFLMinterpreter->Invoke();
     if (_invoke_status != kTfLiteOk)
     {
         MicroPrintf("Invoke failed."); // Log failure of the invoke operation
         return false;                  // Return false if invocation fails
+    }
+
+    if (_debug)
+    {
+        MicroPrintf("DEBUG:Prediction took %d microseconds.", micros() - _previousMicros);
     }
 
     return true; // Return true if prediction was successful
