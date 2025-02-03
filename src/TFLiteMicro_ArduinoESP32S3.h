@@ -81,7 +81,7 @@ tflite::MicroInterpreter *TFLMsetupModel(const unsigned char *TFModel,
 }
 
 /*!
-    @brief  Predict an output from the given input(s), set them using `interpreter->input[x] = y`
+    @brief  Predict an output from the given input(s), set them using for example `TFLMinput->data.f[a] = b`
     @return True if the prediction was successful, False if an error occurred
 */
 bool TFLMpredict()
