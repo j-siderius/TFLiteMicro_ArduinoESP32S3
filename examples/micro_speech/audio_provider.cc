@@ -91,22 +91,13 @@ static void i2s_init(void) {
       .tx_desc_auto_clear = false,
       .fixed_mclk = -1,
   };
-#if CONFIG_IDF_TARGET_ESP32S3
   i2s_pin_config_t pin_config = {
-      .bck_io_num = 41,    // IIS_SCLK
-      .ws_io_num = 42,     // IIS_LCLK
+      .bck_io_num = 7,    // IIS_SCLK
+      .ws_io_num = 6,     // IIS_LCLK
       .data_out_num = -1,  // IIS_DSIN
-      .data_in_num = 2,   // IIS_DOUT
+      .data_in_num = 5,   // IIS_DOUT
   };
   i2s_config.bits_per_sample = (i2s_bits_per_sample_t) 32;
-#else
-  i2s_pin_config_t pin_config = {
-      .bck_io_num = 26,    // IIS_SCLK
-      .ws_io_num = 32,     // IIS_LCLK
-      .data_out_num = -1,  // IIS_DSIN
-      .data_in_num = 33,   // IIS_DOUT
-  };
-#endif
 
   esp_err_t ret = 0;
   ret = i2s_driver_install(i2s_port, &i2s_config, 0, NULL);

@@ -13,11 +13,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-#ifndef TENSORFLOW_LITE_MICRO_EXAMPLES_MICRO_SPEECH_MICRO_FEATURES_NO_MICRO_FEATURES_DATA_H_
-#define TENSORFLOW_LITE_MICRO_EXAMPLES_MICRO_SPEECH_MICRO_FEATURES_NO_MICRO_FEATURES_DATA_H_
+#include "command_responder.h"
+#include "tensorflow/lite/micro/micro_log.h"
 
-extern const int g_no_micro_f9643d42_nohash_4_width;
-extern const int g_no_micro_f9643d42_nohash_4_height;
-extern const signed char g_no_micro_f9643d42_nohash_4_data[];
-
-#endif  // TENSORFLOW_LITE_MICRO_EXAMPLES_MICRO_SPEECH_MICRO_FEATURES_NO_MICRO_FEATURES_DATA_H_
+// The default implementation writes out the name of the recognized command
+// to the error console. Real applications will want to take some custom
+// action instead, and should implement their own versions of this function.
+void RespondToCommand(int32_t current_time, const char* found_command,
+                      float score, bool is_new_command) {
+  if (is_new_command) {
+    MicroPrintf("Heard %s (%.4f) @%dms", found_command, score, current_time);
+  }
+}
