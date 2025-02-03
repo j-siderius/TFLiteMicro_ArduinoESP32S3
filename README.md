@@ -3,14 +3,16 @@
 Arduino library that ports TensorFlow Lite Micro to the ESP32-S3. Provides a very basic API for abstracting some of the TFLite c-specific references and nuances.
 
 - Based on the [Espressif TFLite Micro repository](https://github.com/espressif/esp-tflite-micro).
-- Utilises the optimised [ESP-NN](https://github.com/espressif/esp-nn) functions for the ESP32-S3 to speed up predictions.
+- Utilises the optimised [ESP-NN](https://github.com/espressif/esp-nn) functions for the ESP32-S3 to speed up predictions considerably.
 - Three examples from Espressif and the [TensorFlow Lite Micro repository](https://github.com/tensorflow/tflite-micro) (Hello_World, Micro_Speech and MNIST_LSTM).
-- Built for the [TinyML Development board](https://github.com/j-siderius/TinyML-board-documentation), but may work on other ESP32-S3 boards.
-- Pre-compiled for the ESP32-S3 to speed up compilation.
+- Written specifically for the [TinyML Development board](https://github.com/j-siderius/TinyML-board-documentation), but may work on other ESP32-S3 boards [^1].
+- Pre-compiled for the ESP32-S3 to speed up compilation significantly.
+
+[^1]: All operations should be supported on every ESP32-S3 board, however some pin-specific configuration (for example in the Micro_Speech example sketch) may differ between ESP32-S3 boards. Some boards may also feature less Flash and (PS)RAM storage than the TinyML Development Board, meaning there is less space to store models.
 
 ## How to use
 
-Also look at the [Minimal example](#minimal-example) for the implementation of TFLiteMicro_ArduinoESP32S3 into a sketch.
+The [Minimal example](#minimal-example) gives a quick overview for the implementation of TFLiteMicro_ArduinoESP32S3 into a sketch. Below are all the steps nescessary to go from data to a TensorFlow model to a TFLite Micro model running on the ESP32-S3.
 
 1. Gather input data using a (Python) simulation or Arduino sensor sketch.
 2. Build and train a TensorFlow model in Python.
@@ -24,7 +26,7 @@ Also look at the [Minimal example](#minimal-example) for the implementation of T
 10. Look at the output of the prediction by reading the output tensor(s), for example `float y = TFLMoutput->data.f[0];`.
 
 ## Library API
-_tflite::MicroInterpreter_ **TFLMsetupModel**<int TFOperatorCount, size_t TFArenaSize>(const unsigned char *TFModel, tflite::MicroMutableOpResolver<TFOperatorCount> (*TFOperatorResolver)(), bool TFdebug = false)
+**TFLMsetupModel**<int TFOperatorCount, size_t TFArenaSize>(const unsigned char *TFModel, tflite::MicroMutableOpResolver<TFOperatorCount> (*TFOperatorResolver)(), bool TFdebug = false)
 
 Setup the TFLiteMicro model and initialise all dependencies. Schould generally be copied over from the generated model file.
 
@@ -41,14 +43,14 @@ Setup the TFLiteMicro model and initialise all dependencies. Schould generally b
 
 <hr>
 
-_bool_ **TFLMpredict**()
+**TFLMpredict**()
 
 Predict an output from the given input(s), set them using for example `TFLMinput->data.f[a] = b`. Outputs can be read from the output tensor(s) using fore example `float a = TFLMoutput->data.f[a];`.
 
 **Returns** &emsp;True if the prediction was successful, False if an error occurred
 
 ## Minimal example
-```Arduino
+```cpp
 // Include the library and example model
 #include "TFLiteMicro_ArduinoESP32S3.h"
 #include "example_model.h"
@@ -92,4 +94,4 @@ void loop() {
 <br>This example recognises two keywords: `yes` and `no` as well as background noise. The model gives the probability for the most likely sound.
 
 [**MNIST LSTM**](examples/mnsit_lstm/)
-<br>This example uses the LSTM operation to classify handwritten digits from the MNIST dataset. Included in the example are 10 random numbers
+<br>This example uses the LSTM operation to classify handwritten digits from the MNIST dataset. Included in the example are 10 random handwritten numbers, stored as byte arrays
