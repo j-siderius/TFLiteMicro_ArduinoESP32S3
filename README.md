@@ -94,20 +94,6 @@ The TFLite Micro output array pointer, which stores all outputs from the model. 
 
 *Other datatypes can be found in the [common.h _TfLitePtrUnion_](https://github.com/j-siderius/TFLiteMicro_ArduinoESP32S3/blob/main/src/tensorflow/lite/core/c/common.h#L361) definition.*
 
-<details>
-
-<summary>Extra: Input and Output testing</summary>
-
-In some cases it might be useful to know the dimension (shape) and type of the input or outputs (TfliteTensors).
-
-To check the dimension of the tensor, query it by calling `TFLMinput->dims->size` which returns the amount of elements in the input or output.
-
-To check the datatype of the tensor, query it by calling `TFLMoutput->type` which returns the type of the input or output. The output can be decyphered in the [tflite_types.h type definition](https://github.com/j-siderius/TFLiteMicro_ArduinoESP32S3/blob/main/src/tensorflow/compiler/mlir/lite/core/c/tflite_types.h#L46).
-
-To check the parameters of the tensor, query it by calling `TFLMinput->params.scale` or `TFLMoutput->params.zero_point` which return the quantisation parameters of the input or output.
-</details>
-
-
 ## Minimal example
 ```cpp
 // Include the library and example model
@@ -154,5 +140,28 @@ void loop() {
 
 [**MNIST LSTM**](examples/mnsit_lstm/)
 <br>This example uses the LSTM operation to classify handwritten digits from the MNIST dataset. Included in the example are 10 random handwritten numbers, stored as byte arrays
+
+## Advanced options
+
+#### Reducing required model memory
+
+The setup command for the TFLiteMicro_ArduinoESP32S3 library, generated using the tflm_converter tool can be modified in order to reduce the memory requirement. The default `TFArenaSize` is generated using a simple algorithm[^2], however it can be reduced to reduce the total memory footprint. To see the actual required memory:
+
+1. Upload the model using the default calculated `TFArenaSize`, but enabling the `TFdebug=true` option in the model setup function, for example `TFLMinterpreter = TFLMsetupModel<TFLMnumberOperators, 5000>(TFLM_example_model, TFLMgetResolver, true);`.
+2. Look at the serial output of the model, the debugger will respond with something like `DEBUG:Tensor arena used 2440 bytes`.
+3. The `TFArenaSize` can now be changed to a value closer to the actual (allocated) tensor arena size. _It is advisable to always give the model a bit more memory than the absolute minimum._
+4. Change the model setup function, for example `TFLMinterpreter = TFLMsetupModel<TFLMnumberOperators, 2500>(TFLM_example_model, TFLMgetResolver, true);`, and upload the model.
+
+#### Input and Output testing
+
+In some cases it might be useful to know the dimension (shape) and type of the input or outputs (TfliteTensors).
+
+To check the dimension of the tensor, query it by calling `TFLMinput->dims->size` which returns the amount of elements in the input or output.
+
+To check the datatype of the tensor, query it by calling `TFLMoutput->type` which returns the type of the input or output. The output can be decyphered in the [tflite_types.h type definition](https://github.com/j-siderius/TFLiteMicro_ArduinoESP32S3/blob/main/src/tensorflow/compiler/mlir/lite/core/c/tflite_types.h#L46).
+
+To check the parameters of the tensor, query it by calling `TFLMinput->params.scale` or `TFLMoutput->params.zero_point` which return the quantisation parameters of the input or output.
+
+[^2] The algorithm simply looks at the final `model_length`, then rounding up to the closest 5000 bytes. Look at the implementation in the [tflm_convert.py program](https://github.com/j-siderius/TFLiteMicro_ArduinoESP32S3/blob/main/tools/tflm_converter.py#L171).
 
 &copy; Jannick Siderius 

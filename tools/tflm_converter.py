@@ -168,7 +168,7 @@ def GenerateTFLMHeaderFile(build_template, model_ops, model_name, model_hex_arra
             'model_length': model_length,
             'model_name': "TFLM_" + model_name + "_model",
             'hex_array': model_hex_array,
-            'tensor_arena_size': (int(41240/5000)+1)*5000
+            'tensor_arena_size': (int(model_length/5000)+1)*5000
         }
         file_obj.write(build_template.render(**key_values_in_template))
 
