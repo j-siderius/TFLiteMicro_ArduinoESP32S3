@@ -95,14 +95,16 @@ The TFLite Micro output array pointer, which stores all outputs from the model. 
 *Other datatypes can be found in the [common.h _TfLitePtrUnion_](https://github.com/j-siderius/TFLiteMicro_ArduinoESP32S3/blob/main/src/tensorflow/lite/core/c/common.h#L361) definition.*
 
 <details>
-<summary>Input and Output testing</summary>
-    In some cases it might be useful to know the dimension (shape) and type of the input or outputs (TfliteTensors).
 
-    To check the dimension of the tensor, query it by calling `TFLMinput->dims->size` which returns the amount of elements in the input or output.
+<summary>Extra: Input and Output testing</summary>
 
-    To check the datatype of the tensor, query it by calling `TFLMoutput->type` which returns the type of the input or output. The output can be decyphered in the [tflite_types.h type definition](https://github.com/j-siderius/TFLiteMicro_ArduinoESP32S3/blob/main/src/tensorflow/compiler/mlir/lite/core/c/tflite_types.h#L46).
+In some cases it might be useful to know the dimension (shape) and type of the input or outputs (TfliteTensors).
 
-    To check the parameters of the tensor, query it by calling `TFLMinput->params.scale` or `TFLMoutput->params.zero_point` which return the quantisation parameters of the input or output.
+To check the dimension of the tensor, query it by calling `TFLMinput->dims->size` which returns the amount of elements in the input or output.
+
+To check the datatype of the tensor, query it by calling `TFLMoutput->type` which returns the type of the input or output. The output can be decyphered in the [tflite_types.h type definition](https://github.com/j-siderius/TFLiteMicro_ArduinoESP32S3/blob/main/src/tensorflow/compiler/mlir/lite/core/c/tflite_types.h#L46).
+
+To check the parameters of the tensor, query it by calling `TFLMinput->params.scale` or `TFLMoutput->params.zero_point` which return the quantisation parameters of the input or output.
 </details>
 
 
