@@ -26,7 +26,10 @@ The [Minimal example](#minimal-example) gives a quick overview for the implement
 10. Look at the output of the prediction by reading the output tensor(s), for example `float y = TFLMoutput->data.f[0];`.
 
 ## Library API
-**TFLMsetupModel**<int TFOperatorCount, size_t TFArenaSize>(const unsigned char *TFModel, tflite::MicroMutableOpResolver<TFOperatorCount> (*TFOperatorResolver)(), bool TFdebug = false)
+
+#### TFLMsetupModel<int TFOperatorCount, size_t TFArenaSize>(const unsigned char *TFModel, tflite::MicroMutableOpResolver<TFOperatorCount> (*TFOperatorResolver)(), bool TFdebug = false)
+
+**Type** &emsp;Function - _tflite::MicroInterpreter generator_
 
 Setup the TFLiteMicro model and initialise all dependencies. Schould generally be copied over from the generated model file.
 
@@ -39,15 +42,69 @@ Setup the TFLiteMicro model and initialise all dependencies. Schould generally b
 | `TFdebug` | Print some additional information during setup, default is `false` |
 
 
-**Returns** &emsp;The TFLiteMicro interpreter pointer
+**Returns** &emsp;The TFLiteMicro interpreter reference
 
-<hr>
+#### TFLMpredict()
 
-**TFLMpredict**()
+**Type** &emsp;Function - _bool_
 
-Predict an output from the given input(s), set them using for example `TFLMinput->data.f[a] = b`. Outputs can be read from the output tensor(s) using fore example `float a = TFLMoutput->data.f[a];`.
+Predict an output from the given input(s), set them using for example `TFLMinput->data.f[a] = b`. Outputs can be read from the output tensor(s) using for example `float a = TFLMoutput->data.f[a];`. For more information about the inputs and outputs of the model, refer to the [TFLMinput](#tflminput) and [TFLMoutput](#tflmoutput) sections.
 
-**Returns** &emsp;True if the prediction was successful, False if an error occurred
+| Parameter | Description |
+| --- | --- |
+| N/A |  |
+
+**Returns** &emsp;_True_ if the prediction was successful, _False_ if an error occurred
+
+<br>
+
+#### TFLMinterpreter
+
+**Type** &emsp;Object - _tflite::MicroInterpreter_
+
+The TFLite Micro interpreter reference, which handles all inputs, inference (predictions) and outputs. The `TFLMinterpreter` is initialised and stored inside of the library. The interpreter can be checked by querrying `if (TFLMinterpreter)` which should equate to _True_ if the model was setup correctly.
+
+<br>
+
+#### TFLMinput
+
+**Type** &emsp;Variable - _TfLiteTensor_
+
+The TFLite Micro input array pointer, which handles all inputs for the model. Inputs can be of different variable types (for example _uint8_t_, _float_ or _double_), depending on your TensorFlow model. To set an input to the model, point the input to the correct datatype and array position and assign it the value. For example, to set the second input `TFLMinput->data.f[1] = 16.4;`. In the table below are some of the most common datatypes. If the input consists of a matrix (or array), all dimensions will get squashed into one:
+```
+[[a b c]
+ [d e f]] = [a b c d e f]
+```
+
+#### TFLMoutput
+
+**Type** &emsp;Variable - _TfLiteTensor_
+
+The TFLite Micro output array pointer, which stores all outputs from the model. Output can be of different variable types, just like inputs, depending on the TensorFlow model. To read from an output of the model, assign the value of the output to a variable in the correct datatype. For example, to read the third output `float a = TFLMoutput->data.f[2];`. The same datatypes apply as for the input, see the table below. Just like the input, the output will get squashed into one dimension, regardless of the initial shape.
+
+
+| Input/Output Datatype | Code |
+| --- | --- |
+| | <small>`i` is the array index of the input or output</small>  |
+| int8_t (signed 8-bit integer) | `data.int8[i]` |
+| uint8_t (unsigned 8-bit integer) | `data.uint8[i]` |
+| float | `data.f[i]`|
+| bool | `data.b[i]` |
+| char | `data.raw[i]` |
+
+*Other datatypes can be found in the [common.h _TfLitePtrUnion_](https://github.com/j-siderius/TFLiteMicro_ArduinoESP32S3/blob/main/src/tensorflow/lite/core/c/common.h#L361) definition.*
+
+<details>
+<summary>Input and Output testing</summary>
+    In some cases it might be useful to know the dimension (shape) and type of the input or outputs (TfliteTensors).
+
+    To check the dimension of the tensor, query it by calling `TFLMinput->dims->size` which returns the amount of elements in the input or output.
+
+    To check the datatype of the tensor, query it by calling `TFLMoutput->type` which returns the type of the input or output. The output can be decyphered in the [tflite_types.h type definition](https://github.com/j-siderius/TFLiteMicro_ArduinoESP32S3/blob/main/src/tensorflow/compiler/mlir/lite/core/c/tflite_types.h#L46).
+
+    To check the parameters of the tensor, query it by calling `TFLMinput->params.scale` or `TFLMoutput->params.zero_point` which return the quantisation parameters of the input or output.
+</details>
+
 
 ## Minimal example
 ```cpp
@@ -95,3 +152,5 @@ void loop() {
 
 [**MNIST LSTM**](examples/mnsit_lstm/)
 <br>This example uses the LSTM operation to classify handwritten digits from the MNIST dataset. Included in the example are 10 random handwritten numbers, stored as byte arrays
+
+&copy; Jannick Siderius 
