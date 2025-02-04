@@ -17,7 +17,7 @@ The [Minimal example](#minimal-example) gives a quick overview for the implement
 1. Gather input data using a (Python) simulation or Arduino sensor sketch.
 2. Build and train a TensorFlow model in Python.
 3. Save and convert the TensorFlow model into a TFLite (`.tflite`) model.
-4. Convert the TFLite model using the `convert_tflite_to_tflm()` function from `tflm_converter.py`. Learn more in the [tools README](tools/README.md).
+4. Convert the TFLite model using the `convert_tflite_to_tflm()` function from `tflm_converter.py`. Learn more in the [tools README](tools).
 5. Import the generated model from `tflm_converter.py` into Arduino. Add it via the 'New Tab' option or copy it to the source folder of the Arduino sketch.
 6. Include both the library and the model file at the top of the Arduino sketch, for example through `#include "TFLiteMicro_ArduinoESP32S3.h"` and `#include "example_model.h"`.
 7. Initialise the model in the Arduino `setup()` by copying over the setup line from the model, for example `TFLMinterpreter = TFLMsetupModel<TFLMnumberOperators, 5000>(TFLM_example_model, TFLMgetResolver);`.
@@ -39,7 +39,7 @@ Setup the TFLiteMicro model and initialise all dependencies. Schould generally b
 | `TFArenaSize` | The size (in bytes) of the model arena / working memory |
 | `TFModel` | The TFLiteMicro model (defined in the resolver header file) |
 | `TFOperatorResolver` | The resolver function for all TFLiteMicro operators (defined in the resolver header file) |
-| `TFdebug` | Print some additional information during setup, default is `false` |
+| `TFdebug` | Debug some additional information during setup, default is `false`. The debugger prints the actual size (in bytes) of the model arena, as well as the time it took to make the prediction (in microseconds). |
 
 
 **Returns** &emsp;The TFLiteMicro interpreter reference
@@ -147,6 +147,8 @@ void loop() {
 
 The setup command for the TFLiteMicro_ArduinoESP32S3 library, generated using the tflm_converter tool can be modified in order to reduce the memory requirement. The default `TFArenaSize` is generated using a simple algorithm[^2], however it can be reduced to reduce the total memory footprint. To see the actual required memory:
 
+[^2]: The algorithm simply looks at the final `model_length`, then rounds up to the closest 5000 bytes. Look at the implementation in the [tflm_convert.py program](https://github.com/j-siderius/TFLiteMicro_ArduinoESP32S3/blob/main/tools/tflm_converter.py#L171).
+
 1. Upload the model using the default calculated `TFArenaSize`, but enabling the `TFdebug=true` option in the model setup function, for example `TFLMinterpreter = TFLMsetupModel<TFLMnumberOperators, 5000>(TFLM_example_model, TFLMgetResolver, true);`.
 2. Look at the serial output of the model, the debugger will respond with something like `DEBUG:Tensor arena used 2440 bytes`.
 3. The `TFArenaSize` can now be changed to a value closer to the actual (allocated) tensor arena size. _It is advisable to always give the model a bit more memory than the absolute minimum._
@@ -161,7 +163,5 @@ To check the dimension of the tensor, query it by calling `TFLMinput->dims->size
 To check the datatype of the tensor, query it by calling `TFLMoutput->type` which returns the type of the input or output. The output can be decyphered in the [tflite_types.h type definition](https://github.com/j-siderius/TFLiteMicro_ArduinoESP32S3/blob/main/src/tensorflow/compiler/mlir/lite/core/c/tflite_types.h#L46).
 
 To check the parameters of the tensor, query it by calling `TFLMinput->params.scale` or `TFLMoutput->params.zero_point` which return the quantisation parameters of the input or output.
-
-[^2] The algorithm simply looks at the final `model_length`, then rounding up to the closest 5000 bytes. Look at the implementation in the [tflm_convert.py program](https://github.com/j-siderius/TFLiteMicro_ArduinoESP32S3/blob/main/tools/tflm_converter.py#L171).
 
 &copy; Jannick Siderius 
