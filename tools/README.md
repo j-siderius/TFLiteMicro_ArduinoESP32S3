@@ -7,6 +7,21 @@ The converter checks if all operations in the TFLite model are compatible with T
 To add the generated model to an Arduino sketch, either place it in to the Arduino project folder of the main sketch, or add it via the 'New Tab' option.
 To use the generated model, include the setup line from the model, for example `TFLMinterpreter = TFLMsetupModel<TFLMnumberOperators, 5000>(TFLM_example_model, TFLMgetResolver);`.
 
+## Contents
+
+- [Requirements](#requirements)
+- [Library API](#library-api)
+- [Minimal code example](#minimal-code-example)
+
+## Requirements
+
+The tools require the following dependencies:
+
+| Library | Version | Link |
+| --- | --- | --- |
+| Mako | >=1.3.8 | https://pypi.org/project/Mako/ |
+| TensorFlow | >=2.18.0 | https://pypi.org/project/tensorflow/ |
+
 ## Library API
 
 #### convert_tflite_to_tflm(tflite_path: str = "model.tflite") -> str
@@ -21,7 +36,7 @@ Convert the specified TFLite model into a TFLite Micro header file to be used in
 
 **Returns** &emsp;String-path to the converted Arduino header file
 
-## Minimal example
+## Minimal code example
 ```python
 # Import the converter tool
 from tools.tflm_converter import convert_tflite_to_tflm

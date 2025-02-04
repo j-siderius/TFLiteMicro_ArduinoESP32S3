@@ -10,6 +10,24 @@ Arduino library that ports TensorFlow Lite Micro to the ESP32-S3. Provides a ver
 
 [^1]: All operations should be supported on every ESP32-S3 board, however some pin-specific configuration (for example in the Micro_Speech example sketch) may differ between ESP32-S3 boards. Some boards may also feature less Flash and (PS)RAM storage than the TinyML Development Board, meaning there is less space to store models.
 
+## Contents
+
+- [How to use](#how-to-use)
+- [Library API](#library-api)
+    - [TFLMsetupModel](#tflmsetupmodelint-tfoperatorcount-size_t-tfarenasizeconst-unsigned-char-tfmodel-tflitemicromutableopresolver-tfoperatorresolver-bool-tfdebug--false)
+    - [TFLMpredict](#tflmpredict)
+    - [TFLMinterpreter](#tflminterpreter)
+    - [TFLMinput](#tflminput)
+    - [TFLMoutput](#tflmoutput)
+- [Minimal code example](#minimal-code-example)
+- [Examples](#examples)
+    - [Hello world](#hello-world)
+    - [Micro speech](#micro-speech)
+    - [MNIST LSTM](#mnist-lstm)
+- [Advanced options](#advanced-options)
+    - [Reducing required model memory](#reducing-required-model-memory)
+    - [Input and Output testing](#input-and-output-testing)
+
 ## How to use
 
 The [Minimal example](#minimal-example) gives a quick overview for the implementation of TFLiteMicro_ArduinoESP32S3 into a sketch. Below are all the steps nescessary to go from data to a TensorFlow model to a TFLite Micro model running on the ESP32-S3.
@@ -94,7 +112,7 @@ The TFLite Micro output array pointer, which stores all outputs from the model. 
 
 *Other datatypes can be found in the [common.h _TfLitePtrUnion_](https://github.com/j-siderius/TFLiteMicro_ArduinoESP32S3/blob/main/src/tensorflow/lite/core/c/common.h#L361) definition.*
 
-## Minimal example
+## Minimal code example
 ```cpp
 // Include the library and example model
 #include "TFLiteMicro_ArduinoESP32S3.h"
@@ -132,14 +150,17 @@ void loop() {
 
 ## Examples
 
-[**Hello world**](examples/hello_world/)
-<br>As the simplest TFLite Micro example, this program tries to recreate (predict) the values from a sine-wave function. The sketch can plot this wave in the Arduino Serial Plotter.
+#### [Hello world](/examples/hello_world/)
 
-[**Micro speech**](examples/micro_speech/)
-<br>This example recognises two keywords: `yes` and `no` as well as background noise. The model gives the probability for the most likely sound.
+As the simplest TFLite Micro example, this program tries to recreate (predict) the values from a sine-wave function. The sketch can plot this wave in the Arduino Serial Plotter.
 
-[**MNIST LSTM**](examples/mnsit_lstm/)
-<br>This example uses the LSTM operation to classify handwritten digits from the MNIST dataset. Included in the example are 10 random handwritten numbers, stored as byte arrays
+#### [Micro speech](/examples/micro_speech/)
+
+This example recognises two keywords: `yes` and `no` as well as background noise. The model gives the probability for the most likely sound.
+
+#### [MNIST LSTM](/examples/mnist_lstm/)
+
+This example uses the LSTM operation to classify handwritten digits from the MNIST dataset. Included in the example are 10 random handwritten numbers, stored as byte arrays
 
 ## Advanced options
 
