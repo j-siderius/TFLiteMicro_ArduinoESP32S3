@@ -6,7 +6,7 @@ The model is trained to replicate a `sine` function and can draw the function in
 
 ## Train your own model
 
-Using the `train_sine.py` file, you can train your own TFLite Micro model, which will generate a `.tflite` file as well as the associated (new) `hello_world_float_model.h` model. The program does the following:
+Using the `train_sine.py` file, a model that predicts the values of sine can be trained. The program does the following:
 
 - Generate 1000 synthetic datapoints from the sine function (x-y pairs).
 - Build the TensorFlow Keras model with two hidden Dense layers of 16 neurons.
