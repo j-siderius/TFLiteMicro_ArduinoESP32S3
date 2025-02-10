@@ -2,7 +2,7 @@
 
 This example is designed to demonstrate the application of an LSTM model using TFLite Micro. It includes a script to train and convert the model, as well as an example sketch which enables the depolyment to TFLite Micro on a microcontroller.
 
-The model is trained to recognise handwritten digits (28x28 grayscale pixels) from the [MNIST dataset](https://www.tensorflow.org/datasets/catalog/mnist). The loop will randomly choose one of the ten included digits and predict the number that is drawn in it. While the MNIST dataset is not a typical scenario where an LSTM model is used in prediction, it gives a simple and easy to understand basis for further projects. Upload the example and open the Serial Monitor at baudrate 115200 to see the predictions.
+The model is trained to recognise handwritten digits (28x28 grayscale pixels) from the [MNIST dataset](https://www.tensorflow.org/datasets/catalog/mnist). The loop will randomly choose one of the ten included digits (stored in `digits.h`) and predict the number that is drawn in it. While the MNIST dataset is not a typical scenario where an LSTM model is used in prediction, it gives a simple and easy to understand basis for further projects. Upload the example and open the Serial Monitor at baudrate 115200 to see the predictions.
 
 Deploying a LSTM model onto a microcontroller with TFLite Micro involves a very specific setup. Newer versions of TensorFlow and Python do not correctly implement the TensorFlow Lite Converter to support LSTM layers. Some research[^1][^2] even suggests that LSTMs can be substituted for conventional CNN networks.
 

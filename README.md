@@ -1,5 +1,9 @@
 # TFLiteMicro_ArduinoESP32S3
 
+![ESP-TFLite Micro version - 1.3.3](https://img.shields.io/badge/ESP--TFLite_Micro_version-1.3.3-2ea44f)
+![Version - 1.0.0](https://img.shields.io/badge/Version-1.0.0-blue)
+
+
 Arduino library that ports TensorFlow Lite Micro to the ESP32-S3. Provides a very basic API for abstracting some of the TFLite c-specific references and nuances.
 
 - Based on the [Espressif TFLite Micro repository](https://github.com/espressif/esp-tflite-micro).
