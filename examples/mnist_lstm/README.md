@@ -6,15 +6,15 @@ The model is trained to recognise handwritten digits (28x28 grayscale pixels) fr
 
 Deploying a LSTM model onto a microcontroller with TFLite Micro involves a very specific setup. Newer versions of TensorFlow and Python do not correctly implement the TensorFlow Lite Converter to support LSTM layers. Some research[^1][^2] even suggests that LSTMs can be substituted for conventional CNN networks.
 
-[^1]: https://arxiv.org/abs/1803.01271
-[^2]: https://arxiv.org/abs/1509.01626
+[^1]: S. Bai, J. Z. Kolter, and V. Koltun, ‘An empirical evaluation of generic convolutional and recurrent networks for sequence modeling’, Apr. 19, 2018, [arXiv: arXiv:1803.01271](https://arxiv.org/abs/1803.01271). doi: 10.48550/arXiv.1803.01271.
+[^2]: X. Zhang, J. Zhao, and Y. LeCun, ‘Character-level Convolutional Networks for Text Classification’, Apr. 04, 2016, [arXiv: arXiv:1509.01626](https://arxiv.org/abs/1509.01626). doi: 10.48550/arXiv.1509.01626.
 
 ## Train your own model
 
 > [!IMPORTANT]
 > The training script requires **Python 3.10.x-3.11.x** and **TensorFlow 2.15.1** specifically. Using other versions will not generate a functioning TFLite Micro model.
 
-Using the `train_lstm.py` file, a LSTM model that recognises handwritten digits from the MNIST dataset can be trained. The program does the following:
+Using the `train_mnist_lstm.py` file, a LSTM model that recognises handwritten digits from the MNIST dataset can be trained. The program does the following:
 
 - Fetch the MNIST dataset from the TensorFlow repository.
 - Build the TensorFlow Keras model with one LSTM layer, a Flattening layer and a Dense layer.
