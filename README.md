@@ -1,7 +1,6 @@
 # TFLiteMicro_ArduinoESP32S3
 
-![ESP-TFLite Micro version - 1.3.3](https://img.shields.io/badge/ESP--TFLite_Micro_version-1.3.3-2ea44f)
-![Version - 1.0.0](https://img.shields.io/badge/Version-1.0.0-blue)
+[![GitHub Release](https://img.shields.io/github/v/release/j-siderius/TFLiteMicro_ArduinoESP32S3?label=Version&color=2ea44f)](https://github.com/j-siderius/TFLiteMicro_ArduinoESP32S3/releases/latest)
 
 
 Arduino library that ports TensorFlow Lite Micro to the ESP32-S3. Provides a very basic API for abstracting some of the TFLite c-specific references and nuances.
@@ -16,6 +15,7 @@ Arduino library that ports TensorFlow Lite Micro to the ESP32-S3. Provides a ver
 
 ## Contents
 
+- [How to install](#how-to-install)
 - [How to use](#how-to-use)
 - [Library API](#library-api)
     - [TFLMsetupModel](#tflmsetupmodelint-tfoperatorcount-size_t-tfarenasizeconst-unsigned-char-tfmodel-tflitemicromutableopresolver-tfoperatorresolver-bool-tfdebug--false)
@@ -31,6 +31,12 @@ Arduino library that ports TensorFlow Lite Micro to the ESP32-S3. Provides a ver
 - [Advanced options](#advanced-options)
     - [Reducing required model memory](#reducing-required-model-memory)
     - [Input and Output testing](#input-and-output-testing)
+
+## How to install
+
+Download the Source Code (zip) from the [Latest release](https://github.com/j-siderius/TFLiteMicro_ArduinoESP32S3/releases/latest). Import the library into Arduino IDE by going to _Sketch > Include Library > Add .ZIP Library_.
+
+More information on installing libraries on Arduino can be found on the [Arduino website](https://docs.arduino.cc/software/ide-v1/tutorials/installing-libraries/#importing-a-zip-library).
 
 ## How to use
 
