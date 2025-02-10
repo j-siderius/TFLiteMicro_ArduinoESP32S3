@@ -70,7 +70,7 @@ tflite::MicroInterpreter *TFLMsetupModel(const unsigned char *TFModel,
         delay(1000);
         // Print the actual arena size
         size_t _used_size = _static_interpreter.arena_used_bytes();
-        MicroPrintf("DEBUG:Tensor arena used %d bytes.", _used_size);
+        MicroPrintf("\r\nDEBUG:Tensor arena used %d bytes.\r\n", _used_size);
     }
 
     // Obtain pointers to the model's input and output tensors.
@@ -98,7 +98,7 @@ bool TFLMpredict()
 
     if (_debug)
     {
-        MicroPrintf("DEBUG:Prediction took %d microseconds.", micros() - _previousMicros);
+        MicroPrintf("\r\nDEBUG:Prediction took %d microseconds.\r\n", micros() - _previousMicros);
     }
 
     return true; // Return true if prediction was successful
